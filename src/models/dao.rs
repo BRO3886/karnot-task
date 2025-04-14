@@ -8,4 +8,5 @@ pub struct Url {
     pub link: String,
     pub created_at: std::time::SystemTime,
     pub updated_at: std::time::SystemTime,
+    pub uses: i32,
 }

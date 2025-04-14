@@ -32,6 +32,7 @@ pub struct Url {
     link: String,
     created_at: DateTime<Utc>,
     updated_at: DateTime<Utc>,
+    uses: i32,
 }
 
 impl Url {
@@ -42,6 +43,7 @@ impl Url {
             link,
             created_at: Utc::now(),
             updated_at: Utc::now(),
+            uses: 0,
         }
     }
 
@@ -59,6 +61,7 @@ impl Url {
             link: url.link,
             created_at: DateTime::from(url.created_at),
             updated_at: DateTime::from(url.updated_at),
+            uses: url.uses,
         }
     }
 }
@@ -70,6 +73,7 @@ impl From<Url> for dao::Url {
             link: url.link,
             created_at: url.created_at.into(),
             updated_at: url.updated_at.into(),
+            uses: url.uses,
         }
     }
 }

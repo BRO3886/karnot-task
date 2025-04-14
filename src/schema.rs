@@ -8,5 +8,6 @@ diesel::table! {
         link -> Varchar,
         created_at -> Timestamp,
         updated_at -> Timestamp,
+        uses -> Int4,
     }
 }

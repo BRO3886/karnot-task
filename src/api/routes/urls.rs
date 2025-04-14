@@ -38,16 +38,19 @@ async fn get(path: web::Path<String>, data: web::Data<AppState>) -> impl Respond
         }),
     }
 }
-
 #[get("/{code}")]
 async fn redirect(path: web::Path<String>, data: web::Data<AppState>) -> impl Responder {
     let code = path.into_inner();
-    let url = data.url_service.get_url(code);
-
-    match url {
-        Ok(url) => HttpResponse::PermanentRedirect()
-            .append_header(("Location", url.get_link()))
-            .finish(),
+    let url_result = data.url_service.get_url(code.clone());
+    match url_result {
+        Ok(url) => match data.url_service.increment_uses(code.clone()) {
+            Ok(_) => HttpResponse::PermanentRedirect()
+                .append_header(("Location", url.get_link()))
+                .finish(),
+            Err(e) => HttpResponse::BadRequest().json(ErrorResponse {
+                message: e.to_string(),
+            }),
+        },
         Err(e) => HttpResponse::BadRequest().json(ErrorResponse {
             message: e.to_string(),
         }),

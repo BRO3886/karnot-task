@@ -18,6 +18,11 @@ impl Storage for RedisStorage {
             link: "".to_string(),
             created_at: SystemTime::now(),
             updated_at: SystemTime::now(),
+            uses: 0,
         })
+    }
+
+    fn increment_uses(&self, _: String) -> Result<i32, String> {
+        Ok(0)
     }
 }

@@ -24,10 +24,7 @@ impl db::Storage for PostgresStorage {
         diesel::insert_into(urls::table)
             .values(&url)
             .execute(conn)
-            .map_err(|err| {
-                println!("Error creating url: {}", err);
-                err.to_string()
-            })?;
+            .map_err(|err| err.to_string())?;
         Ok(url.shortcode)
     }
 
@@ -36,11 +33,22 @@ impl db::Storage for PostgresStorage {
         let url = urls::table
             .filter(urls::shortcode.eq(code))
             .first::<dao::Url>(conn)
-            .map_err(|err| {
-                println!("Error getting url: {}", err);
-                err.to_string()
-            })?;
+            .map_err(|err| err.to_string())?;
         Ok(url)
+    }
+
+    fn increment_uses(&self, code: String) -> Result<i32, String> {
+        let conn = &mut self.pool.get().unwrap();
+        let url = urls::table
+            .filter(urls::shortcode.eq(code.clone()))
+            .first::<dao::Url>(conn)
+            .map_err(|err| err.to_string())?;
+        diesel::update(urls::table)
+            .filter(urls::shortcode.eq(code.clone()))
+            .set(urls::uses.eq(url.uses + 1))
+            .execute(conn)
+            .map_err(|err| err.to_string())?;
+        Ok(url.uses + 1)
     }
 }
 

@@ -16,12 +16,21 @@ impl<S: Storage> UrlService<S> {
     pub fn get_url(&self, code: String) -> Result<dto::Url, String> {
         self.storage
             .get_url(code)
-            .map_err(|_| "URL not found".to_string())
+            .map_err(|err| {
+                println!("Error getting url: {}", err);
+                "URL not found".to_string()
+            })
             .map(dto::Url::from_db)
+    }
+
+    pub fn increment_uses(&self, code: String) -> Result<i32, String> {
+        self.storage.increment_uses(code).map_err(|err| {
+            println!("Error incrementing uses: {}", err);
+            "Failed to increment uses".to_string()
+        })
     }
 }
 
-// Clone is automatically implemented if S: Clone
 impl<S: Storage + Clone> Clone for UrlService<S> {
     fn clone(&self) -> Self {
         Self {

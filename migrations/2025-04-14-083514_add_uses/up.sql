@@ -1,0 +1,2 @@
+-- Your SQL goes here
+ALTER TABLE "urls" ADD COLUMN "uses" INTEGER NOT NULL DEFAULT 0;

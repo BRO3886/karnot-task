@@ -3,7 +3,7 @@ use actix_web::{App, HttpServer, web};
 
 use dotenvy::dotenv;
 use karnot_task::AppState;
-use karnot_task::api::routes;
+use karnot_task::api;
 use karnot_task::database::postgres::PostgresStorage;
 use karnot_task::service::UrlService;
 
@@ -27,7 +27,7 @@ async fn main() -> std::io::Result<()> {
         let url_service = url_service.clone();
         App::new()
             .wrap(Logger::new("%a - %r - %s - %T"))
-            .configure(routes::init)
+            .configure(api::init)
             .app_data(web::Data::new(AppState { url_service }))
     })
     .bind(format!("0.0.0.0:{}", port))?
