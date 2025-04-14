@@ -3,9 +3,9 @@ use crate::models::dto::{CreateUrlResponse, ErrorResponse};
 use crate::models::{dto::CreateUrlRequest, dto::Url};
 use crate::utils::validate_url;
 
-use actix_web::{HttpResponse, Responder, post, web};
+use actix_web::{HttpResponse, Responder, get, post, web};
 
-#[post("/urls")]
+#[post("/")]
 async fn create(body: web::Json<CreateUrlRequest>, data: web::Data<AppState>) -> impl Responder {
     if !validate_url(&body.link) {
         return HttpResponse::BadRequest().json(ErrorResponse {
@@ -19,6 +19,35 @@ async fn create(body: web::Json<CreateUrlRequest>, data: web::Data<AppState>) ->
 
     match id {
         Ok(id) => HttpResponse::Ok().json(CreateUrlResponse { id }),
+        Err(e) => HttpResponse::BadRequest().json(ErrorResponse {
+            message: e.to_string(),
+        }),
+    }
+}
+
+#[get("/info/{code}")]
+async fn get(path: web::Path<String>, data: web::Data<AppState>) -> impl Responder {
+    let code = path.into_inner();
+    let url = data.url_service.get_url(code);
+    println!("url: {:?}", url);
+
+    match url {
+        Ok(url) => HttpResponse::Ok().json(url),
+        Err(e) => HttpResponse::BadRequest().json(ErrorResponse {
+            message: e.to_string(),
+        }),
+    }
+}
+
+#[get("/{code}")]
+async fn redirect(path: web::Path<String>, data: web::Data<AppState>) -> impl Responder {
+    let code = path.into_inner();
+    let url = data.url_service.get_url(code);
+
+    match url {
+        Ok(url) => HttpResponse::PermanentRedirect()
+            .append_header(("Location", url.get_link()))
+            .finish(),
         Err(e) => HttpResponse::BadRequest().json(ErrorResponse {
             message: e.to_string(),
         }),
