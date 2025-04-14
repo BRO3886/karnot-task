@@ -13,6 +13,7 @@ type DB = Pg;
 
 type DbPool = r2d2::Pool<ConnectionManager<PgConnection>>;
 
+#[derive(Clone)]
 pub struct PostgresStorage {
     pool: DbPool,
 }

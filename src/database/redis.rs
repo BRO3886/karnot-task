@@ -4,6 +4,7 @@ use crate::models::dao;
 
 use super::db::Storage;
 
+#[derive(Clone)]
 pub struct RedisStorage;
 
 impl Storage for RedisStorage {

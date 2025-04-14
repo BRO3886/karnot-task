@@ -7,16 +7,16 @@ use karnot_task::database::postgres::PostgresStorage;
 use karnot_task::service::UrlService;
 
 struct AppState {
-    url_service: UrlService,
+    url_service: UrlService<PostgresStorage>,
 }
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     dotenv().ok();
-    let port = std::env::var("PORT").unwrap_or("8080".to_string());
 
+    let port = std::env::var("PORT").unwrap_or("8080".to_string());
     let storage = PostgresStorage::new();
-    let url_service = UrlService::new(Box::new(storage));
+    let url_service = UrlService::new(storage);
 
     env_logger::init();
     if std::env::var_os("RUST_LOG").is_none() {
@@ -27,12 +27,11 @@ async fn main() -> std::io::Result<()> {
 
     println!("🚀 Server started successfully on port {}", port);
     HttpServer::new(move || {
+        let url_service = url_service.clone();
         App::new()
             .wrap(Logger::new("%a - %r - %s - %T"))
             .configure(routes::init)
-            .app_data(web::Data::new(AppState {
-                url_service: url_service.clone(),
-            }))
+            .app_data(web::Data::new(AppState { url_service }))
     })
     .bind(format!("0.0.0.0:{}", port))?
     .run()

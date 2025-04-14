@@ -1,11 +1,11 @@
-use crate::database::db;
-use crate::models::dao;
-pub struct UrlService {
-    storage: Box<dyn db::Storage>,
+use crate::{database::db::Storage, models::dao};
+
+pub struct UrlService<S: Storage> {
+    storage: S,
 }
 
-impl UrlService {
-    pub fn new(storage: Box<dyn db::Storage>) -> Self {
+impl<S: Storage> UrlService<S> {
+    pub fn new(storage: S) -> Self {
         Self { storage }
     }
 
@@ -18,7 +18,8 @@ impl UrlService {
     }
 }
 
-impl Clone for UrlService {
+// Clone is automatically implemented if S: Clone
+impl<S: Storage + Clone> Clone for UrlService<S> {
     fn clone(&self) -> Self {
         Self {
             storage: self.storage.clone(),
