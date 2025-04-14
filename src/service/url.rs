@@ -1,4 +1,4 @@
-use crate::{database::db::Storage, models::dao};
+use crate::{database::db::Storage, models::dto};
 
 pub struct UrlService<S: Storage> {
     storage: S,
@@ -9,12 +9,15 @@ impl<S: Storage> UrlService<S> {
         Self { storage }
     }
 
-    pub fn create_url(&self, url: dao::Url) -> Result<String, String> {
-        self.storage.create_url(url)
+    pub fn create_url(&self, url: dto::Url) -> Result<String, String> {
+        self.storage.create_url(url.into())
     }
 
-    pub fn get_url(&self, code: String) -> Result<dao::Url, String> {
-        self.storage.get_url(code)
+    pub fn get_url(&self, code: String) -> Result<dto::Url, String> {
+        self.storage
+            .get_url(code)
+            .map_err(|_| "URL not found".to_string())
+            .map(dto::Url::from_db)
     }
 }
 

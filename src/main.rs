@@ -2,13 +2,10 @@ use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer, web};
 
 use dotenvy::dotenv;
+use karnot_task::AppState;
 use karnot_task::api::routes;
 use karnot_task::database::postgres::PostgresStorage;
 use karnot_task::service::UrlService;
-
-struct AppState {
-    url_service: UrlService<PostgresStorage>,
-}
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
