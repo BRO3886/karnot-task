@@ -1,0 +1,17 @@
+[package]
+name = "karnot-task"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+actix-web = "4.10.2"
+chrono = { version = "0.4.40", features = ["serde"] }
+env_logger = "0.11.8"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
+url = "2.5.4"
+diesel = { version = "2.2.9", features = ["postgres", "r2d2"] }
+dotenvy = "0.15.7"
+nanoid = "0.4.0"
+diesel_migrations = "2.2.0"
+r2d2 = "0.8.10"
